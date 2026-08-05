@@ -1,0 +1,164 @@
+<div class="block">
+  <div
+    class="flex flex-wrap items-start gap-3 p-4 border-b border-(--mat-sys-outline-variant)"
+  >
+    <button mat-stroked-button [matMenuTriggerFor]="columnsMenu">
+      <mat-icon>view_column</mat-icon>
+      Colonnes
+    </button>
+    <mat-menu #columnsMenu="matMenu">
+      <div class="flex flex-col gap-1 px-4 py-2" (click)="$event.stopPropagation()">
+        <div
+          class="text-[11px] font-medium uppercase tracking-wide text-(--mat-sys-on-surface-variant) mb-1"
+        >
+          Colonnes visibles
+        </div>
+        @for (col of columns(); track col.key) {
+          <mat-checkbox [checked]="isColumnVisible(col.key)" (change)="toggleColumn(col.key)">
+            {{ col.label }}
+          </mat-checkbox>
+        }
+      </div>
+    </mat-menu>
+    @if (hasTextSearch()) {
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 min-w-55">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          type="text"
+          [placeholder]="searchPlaceholder()"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+        />
+        @if (searchTerm()) {
+          <button matSuffix mat-icon-button aria-label="Effacer la recherche" (click)="searchTerm.set('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </mat-form-field>
+    }
+
+    @for (col of controlFilterColumns(); track col.key) {
+      @switch (col.filterType) {
+        @case ('select') {
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="min-w-45 w-55">
+            <mat-label>{{ col.label }}</mat-label>
+            <mat-select
+              multiple
+              [value]="selectFilterValue(col.key)"
+              (selectionChange)="setColumnFilter(col.key, $event.value)"
+            >
+              @for (option of distinctValues(col); track option) {
+                <mat-option [value]="option">{{ option }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+        @case ('number') {
+          <div class="flex gap-2 min-w-65">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 min-w-27.5">
+              <mat-label>{{ col.label }} min</mat-label>
+              <input
+                matInput
+                type="number"
+                [ngModel]="numberFilterValue(col.key).min"
+                (ngModelChange)="setNumberFilter(col.key, 'min', $event)"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 min-w-27.5">
+              <mat-label>{{ col.label }} max</mat-label>
+              <input
+                matInput
+                type="number"
+                [ngModel]="numberFilterValue(col.key).max"
+                (ngModelChange)="setNumberFilter(col.key, 'max', $event)"
+              />
+            </mat-form-field>
+          </div>
+        }
+        @case ('date') {
+          <div class="flex gap-2 min-w-75">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 min-w-32.5">
+              <mat-label>{{ col.label }} du</mat-label>
+              <input
+                matInput
+                [matDatepicker]="fromPicker"
+                [ngModel]="dateFilterValue(col.key).from"
+                (ngModelChange)="setDateFilter(col.key, 'from', $event)"
+              />
+              <mat-datepicker-toggle matSuffix [for]="fromPicker" />
+              <mat-datepicker #fromPicker />
+            </mat-form-field>
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 min-w-32.5">
+              <mat-label>{{ col.label }} au</mat-label>
+              <input
+                matInput
+                [matDatepicker]="toPicker"
+                [ngModel]="dateFilterValue(col.key).to"
+                (ngModelChange)="setDateFilter(col.key, 'to', $event)"
+              />
+              <mat-datepicker-toggle matSuffix [for]="toPicker" />
+              <mat-datepicker #toPicker />
+            </mat-form-field>
+          </div>
+        }
+      }
+    }
+
+    @if (hasActiveFilters()) {
+      <button mat-button (click)="clearFilters()">Tout effacer</button>
+    }
+  </div>
+
+  <div class="relative">
+    @if (loading()) {
+      <div
+        class="flex flex-col items-center justify-center gap-3 py-16 px-4 text-(--mat-sys-on-surface-variant)"
+      >
+        <mat-spinner diameter="40" />
+        <p>Chargement...</p>
+      </div>
+    } @else if (error()) {
+      <div
+        class="flex flex-col items-center justify-center gap-3 py-16 px-4 text-(--mat-sys-on-surface-variant)"
+      >
+        <mat-icon class="text-[40px]! w-10! h-10!">error_outline</mat-icon>
+        <p>{{ error() }}</p>
+        <button mat-flat-button (click)="onRetry()">Réessayer</button>
+      </div>
+    } @else {
+      <div class="overflow-x-auto [&_tr.mat-row:hover]:bg-(--mat-sys-surface-container-high)">
+        <table mat-table [dataSource]="dataSource" matSort class="w-full">
+          @for (col of columns(); track col.key) {
+            <ng-container [matColumnDef]="col.key">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header [disabled]="!col.sortable">
+                {{ col.label }}
+              </th>
+              <td mat-cell *matCellDef="let row">
+                @if (cellTemplate(col.key); as tpl) {
+                  <ng-container *ngTemplateOutlet="tpl; context: { $implicit: row }" />
+                } @else {
+                  {{ displayValue(row, col) }}
+                }
+              </td>
+            </ng-container>
+          }
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns()"></tr>
+
+          <tr *matNoDataRow>
+            <td
+              class="text-center py-10 px-4 text-(--mat-sys-on-surface-variant)"
+              [attr.colspan]="displayedColumns().length"
+            >
+              {{ noDataMessage() }}
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <mat-paginator [pageSizeOptions]="pageSizeOptions()" [pageSize]="pageSize()" showFirstLastButtons />
+    }
+  </div>
+</div>

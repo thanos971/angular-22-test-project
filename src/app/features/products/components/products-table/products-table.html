@@ -1,0 +1,71 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Produits</h1>
+      <p class="subtitle">
+        {{ filteredCount() }} produit(s) affiché(s) sur {{ totalCount() }} ·
+        {{ categories().length }} catégorie(s)
+      </p>
+    </div>
+    <button mat-stroked-button (click)="reload()" [disabled]="loading()">
+      <mat-icon>refresh</mat-icon>
+      Actualiser
+    </button>
+  </header>
+
+  <div class="stats-row">
+    <span class="stat-pill">
+      <mat-icon>inventory</mat-icon>
+      {{ totalCount() }} produit(s)
+    </span>
+    <span class="stat-pill" [class.stat-pill--active]="filteredCount() !== totalCount()">
+      <mat-icon>filter_alt</mat-icon>
+      {{ filteredCount() }} affiché(s)
+    </span>
+    <span class="stat-pill">
+      <mat-icon>category</mat-icon>
+      {{ categories().length }} catégorie(s)
+    </span>
+    @if (hasResults()) {
+      <span class="stat-pill stat-pill--accent">
+        <mat-icon>attach_money</mat-icon>
+        Prix moyen&nbsp;: {{ averagePrice() | currency: 'USD' }}
+      </span>
+    }
+  </div>
+
+  <mat-card class="table-card" appearance="outlined">
+    <app-data-table
+      #productsTable
+      [data]="products()"
+      [columns]="columns"
+      [loading]="loading()"
+      [error]="error()"
+      searchPlaceholder="Rechercher un titre ou une description..."
+      noDataMessage="Aucun produit ne correspond à votre recherche."
+      (retry)="reload()"
+    >
+      <ng-template dtCell="image" let-product>
+        <img class="product-thumb" [src]="product.image" [alt]="product.title" />
+      </ng-template>
+
+      <ng-template dtCell="title" let-product>
+        <span class="cell-title" [title]="product.title">{{ product.title }}</span>
+      </ng-template>
+
+      <ng-template dtCell="category" let-product>
+        <span [class]="'category-badge cat-c' + categoryColorIndex(product.category)">
+          {{ product.category }}
+        </span>
+      </ng-template>
+
+      <ng-template dtCell="price" let-product>
+        {{ product.price | currency: 'USD' }}
+      </ng-template>
+
+      <ng-template dtCell="description" let-product>
+        <span class="cell-description" [title]="product.description">{{ product.description }}</span>
+      </ng-template>
+    </app-data-table>
+  </mat-card>
+</div>

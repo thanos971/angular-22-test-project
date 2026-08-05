@@ -1,0 +1,44 @@
+<div class="page">
+  <a mat-button routerLink="/products">
+    <mat-icon>arrow_back</mat-icon>
+    Retour aux produits
+  </a>
+
+  @if (loading()) {
+    <p class="state-message">Chargement du produit...</p>
+  } @else if (error()) {
+    <p class="state-message state-message--error">{{ error() }}</p>
+  } @else if (product(); as p) {
+    <div class="detail">
+      <div class="detail__image">
+        <img [src]="p.image" [alt]="p.title" />
+      </div>
+      <div class="detail__body">
+        <span class="detail__category">{{ p.category }}</span>
+        <h1>{{ p.title }}</h1>
+        <span class="detail__price">{{ p.price | currency: 'USD' }}</span>
+        <p class="detail__description">{{ p.description }}</p>
+
+        <div class="detail__actions">
+          <div class="quantity-stepper">
+            <button mat-icon-button (click)="decrementQuantity()" [disabled]="quantity() <= 1">
+              <mat-icon>remove</mat-icon>
+            </button>
+            <span class="quantity-stepper__value">{{ quantity() }}</span>
+            <button mat-icon-button (click)="incrementQuantity()">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+          <button mat-flat-button color="primary" (click)="addToCart()">
+            <mat-icon>add_shopping_cart</mat-icon>
+            Ajouter au panier
+          </button>
+        </div>
+
+        @if (cartQuantity() > 0) {
+          <p class="detail__cart-note">{{ cartQuantity() }} dans votre panier</p>
+        }
+      </div>
+    </div>
+  }
+</div>

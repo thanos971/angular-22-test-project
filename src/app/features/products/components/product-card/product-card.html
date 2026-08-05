@@ -1,0 +1,12 @@
+<a class="product-card-link" [routerLink]="['/products', product().id]">
+  <mat-card class="product-card" appearance="outlined">
+    <div class="product-card__image">
+      <img [src]="product().image" [alt]="product().title" />
+    </div>
+    <div class="product-card__body">
+      <span class="product-card__category">{{ product().category }}</span>
+      <h3 class="product-card__title" [title]="product().title">{{ product().title }}</h3>
+      <span class="product-card__price">{{ product().price | currency: 'USD' }}</span>
+    </div>
+  </mat-card>
+</a>

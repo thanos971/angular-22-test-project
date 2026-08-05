@@ -1,0 +1,59 @@
+<div class="page">
+  <h1>Votre panier</h1>
+
+  @if (cartStore.items().length === 0) {
+    <div class="empty-state">
+      <mat-icon>shopping_cart</mat-icon>
+      <p>Votre panier est vide.</p>
+      <a mat-flat-button color="primary" routerLink="/products">Voir les produits</a>
+    </div>
+  } @else {
+    <div class="cart">
+      <ul class="cart-list">
+        @for (item of cartStore.items(); track item.product.id) {
+          <li class="cart-item">
+            <img
+              class="cart-item__image"
+              [src]="item.product.image"
+              [alt]="item.product.title"
+            />
+            <div class="cart-item__info">
+              <span class="cart-item__title" [title]="item.product.title">{{
+                item.product.title
+              }}</span>
+              <span class="cart-item__price">{{ item.product.price | currency: 'USD' }}</span>
+            </div>
+
+            <div class="quantity-stepper">
+              <button
+                mat-icon-button
+                (click)="decrement(item.product.id, item.quantity)"
+              >
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="quantity-stepper__value">{{ item.quantity }}</span>
+              <button mat-icon-button (click)="increment(item.product.id, item.quantity)">
+                <mat-icon>add</mat-icon>
+              </button>
+            </div>
+
+            <span class="cart-item__subtotal">
+              {{ item.product.price * item.quantity | currency: 'USD' }}
+            </span>
+
+            <button mat-icon-button (click)="remove(item.product.id)" aria-label="Retirer">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </li>
+        }
+      </ul>
+
+      <div class="cart-summary">
+        <span>{{ cartStore.totalItems() }} article(s)</span>
+        <span class="cart-summary__total">
+          Total&nbsp;: {{ cartStore.totalPrice() | currency: 'USD' }}
+        </span>
+      </div>
+    </div>
+  }
+</div>

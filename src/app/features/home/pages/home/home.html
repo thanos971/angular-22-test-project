@@ -1,0 +1,59 @@
+<div class="home">
+  <section class="hero">
+    <div class="hero__content">
+      <h1>Tout ce dont vous avez besoin, au meilleur prix</h1>
+      <p class="hero__subtitle">
+        Découvrez notre sélection d'électronique, de bijoux et de vêtements, livrée rapidement.
+      </p>
+      <a mat-flat-button color="primary" routerLink="/products">
+        Voir tous les produits
+        <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+      </a>
+    </div>
+  </section>
+
+  @if (categories().length > 0) {
+    <section class="categories">
+      <h2>Catégories</h2>
+      <div class="categories__grid">
+        @for (category of categories(); track category) {
+          <a class="category-tile" [routerLink]="['/collections', category]">
+            {{ category }}
+          </a>
+        }
+      </div>
+    </section>
+  }
+
+  <section class="featured">
+    <header class="featured__header">
+      <div>
+        <h2>Produits populaires</h2>
+        <p class="subtitle">Une sélection de notre catalogue</p>
+      </div>
+      <button mat-stroked-button (click)="reload()" [disabled]="loading()">
+        <mat-icon>refresh</mat-icon>
+        Actualiser
+      </button>
+    </header>
+
+    @if (loading()) {
+      <p class="state-message">Chargement des produits...</p>
+    } @else if (error()) {
+      <div class="state-message state-message--error">
+        <p>{{ error() }}</p>
+        <button mat-stroked-button (click)="reload()">Réessayer</button>
+      </div>
+    } @else {
+      <div class="featured__grid">
+        @for (product of featuredProducts(); track product.id) {
+          <app-product-card [product]="product" />
+        }
+      </div>
+
+      <div class="featured__footer">
+        <a mat-stroked-button routerLink="/products">Voir tout le catalogue</a>
+      </div>
+    }
+  </section>
+</div>
