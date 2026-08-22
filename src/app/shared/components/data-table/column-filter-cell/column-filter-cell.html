@@ -28,25 +28,21 @@
     </mat-form-field>
   }
   @case ('number') {
-    <div class="flex gap-1">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 min-w-0">
-        <input
-          matInput
-          type="number"
-          placeholder="min"
-          [ngModel]="numberValue().min"
-          (ngModelChange)="setNumberPart('min', $event)"
-        />
-      </mat-form-field>
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 min-w-0">
-        <input
-          matInput
-          type="number"
-          placeholder="max"
-          [ngModel]="numberValue().max"
-          (ngModelChange)="setNumberPart('max', $event)"
-        />
-      </mat-form-field>
+    <mat-slider class="w-full" discrete [min]="numberBounds().min" [max]="numberBounds().max">
+      <input
+        matSliderStartThumb
+        [ngModel]="numberValue().min ?? numberBounds().min"
+        (ngModelChange)="setNumberPart('min', $event)"
+      />
+      <input
+        matSliderEndThumb
+        [ngModel]="numberValue().max ?? numberBounds().max"
+        (ngModelChange)="setNumberPart('max', $event)"
+      />
+    </mat-slider>
+    <div class="flex justify-between text-[11px] text-(--mat-sys-on-surface-variant) -mt-1 px-1">
+      <span>{{ numberValue().min ?? numberBounds().min }}</span>
+      <span>{{ numberValue().max ?? numberBounds().max }}</span>
     </div>
   }
   @case ('date') {

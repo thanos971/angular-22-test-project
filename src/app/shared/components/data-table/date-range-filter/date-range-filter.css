@@ -2,16 +2,7 @@
   display: block;
 }
 
-.date-btn {
-  width: 100%;
-  display: flex !important;
-  align-items: center;
-  gap: 4px;
-  padding: 0 8px !important;
-  min-width: 0;
-  height: 36px;
-  font-size: 13px;
-}
+
 
 .date-icon {
   font-size: 16px !important;

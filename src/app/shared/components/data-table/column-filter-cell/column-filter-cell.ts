@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSliderModule } from '@angular/material/slider';
 
 import { DataTableFilterType, DateRange, NumberRange } from '../data-table-column.model';
 import { DateRangeFilter } from '../date-range-filter/date-range-filter';
@@ -22,6 +23,7 @@ export interface FilterableColumn {
     MatIconModule,
     MatInputModule,
     MatSelectModule,
+    MatSliderModule,
     DateRangeFilter,
   ],
   templateUrl: './column-filter-cell.html',
@@ -31,6 +33,7 @@ export class ColumnFilterCell {
   readonly column = input.required<FilterableColumn>();
   readonly value = input<unknown>(undefined);
   readonly selectOptions = input<string[]>([]);
+  readonly numberBounds = input<{ min: number; max: number }>({ min: 0, max: 100 });
   readonly valueChange = output<unknown>();
 
   protected textValue(): string {
@@ -49,8 +52,8 @@ export class ColumnFilterCell {
     return (this.value() as string[] | undefined) ?? [];
   }
 
-  protected setNumberPart(part: keyof NumberRange, raw: string): void {
-    const parsed = raw === '' || raw == null ? undefined : Number(raw);
+  protected setNumberPart(part: keyof NumberRange, value: string | number): void {
+    const parsed = value === '' || value == null ? undefined : Number(value);
     this.valueChange.emit({ ...this.numberValue(), [part]: parsed });
   }
 }

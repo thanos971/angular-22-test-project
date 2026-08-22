@@ -1,13 +1,15 @@
-<button mat-stroked-button [matMenuTriggerFor]="menu" class="date-btn">
-  <mat-icon class="date-icon">date_range</mat-icon>
+<button matButton="outlined" [matMenuTriggerFor]="menu"  (click)="$event.stopPropagation()">
+  <div class="flex items-center gap-3">
+  <mat-icon matIconPrefix class="date-icon">date_range</mat-icon>
   @if (activeLabel()) {
     <span class="date-label">{{ activeLabel() }}</span>
   } @else {
     <span class="date-placeholder">Période</span>
   }
   @if (activeLabel()) {
-    <mat-icon class="clear-icon" (click)="clear($event)">close</mat-icon>
+    <mat-icon matIconSuffix class="clear-icon" (click)="clear($event)">close</mat-icon>
   }
+  </div>
 </button>
 
 <mat-menu #menu="matMenu" class="date-range-panel">

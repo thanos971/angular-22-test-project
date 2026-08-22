@@ -103,25 +103,28 @@
               </td>
             </ng-container>
             <ng-container [matColumnDef]="col.key + '__f'">
-              <th mat-header-cell *matHeaderCellDef class="align-top px-1 pb-2 pt-0">
+              <th mat-header-cell *matHeaderCellDef class="align-middle px-1 pb-2 pt-0">
                 @if (col.filterable) {
                   <app-column-filter-cell
                     [column]="col"
                     [value]="columnFilters()[col.key]"
                     [selectOptions]="col.filterType === 'select' ? distinctValues(col) : []"
+                    [numberBounds]="
+                      col.filterType === 'number' ? numberBounds(col) : { min: 0, max: 100 }
+                    "
                     (valueChange)="setColumnFilter(col.key, $event)"
                   />
                 }
               </th>
             </ng-container>
           }
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
           <tr
             mat-header-row
             *matHeaderRowDef="filterDisplayedColumns()"
             [hidden]="!showFilters()"
           ></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns()"></tr>
+        
           <tr
             mat-row
             *matRowDef="let row; columns: displayedColumns()"

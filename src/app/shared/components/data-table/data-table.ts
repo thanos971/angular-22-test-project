@@ -242,6 +242,17 @@ export class DataTable<T> {
     return Array.from(new Set(values)).sort();
   }
 
+  protected numberBounds(col: DataTableColumn<T>): { min: number; max: number } {
+    const values = this.data()
+      .map((row) => Number(this.rawValue(row, col)))
+      .filter((v) => isFinite(v));
+    if (!values.length) return { min: 0, max: 100 };
+    return {
+      min: Math.floor(values.reduce((a, b) => Math.min(a, b))),
+      max: Math.ceil(values.reduce((a, b) => Math.max(a, b))),
+    };
+  }
+
   protected isColumnVisible(key: string): boolean {
     return this.visibleColumns().has(key);
   }
