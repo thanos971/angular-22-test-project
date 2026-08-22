@@ -1,0 +1,159 @@
+.actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+}
+
+.delete-btn {
+  color: var(--mat-sys-error);
+}
+
+:host {
+}
+
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.table-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── Stat pills ─────────────────────────────────────────────── */
+
+.stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stat-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--mat-sys-surface-container-high);
+  color: var(--mat-sys-on-surface-variant);
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.stat-pill mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.stat-pill--active {
+  background: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
+}
+
+.stat-pill--accent {
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+}
+
+.stat-pill--warn {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.stat-pill--selection {
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+}
+
+/* ── Cell styles ────────────────────────────────────────────── */
+
+.order-id {
+  font-family: monospace;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.customer-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.customer-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.total-cell {
+  font-weight: 500;
+}
+
+/* ── Status badges ──────────────────────────────────────────── */
+
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-pending {
+  background: #fff3e0;
+  color: #e65100;
+}
+.status-processing {
+  background: #e3f2fd;
+  color: #0d47a1;
+}
+.status-shipped {
+  background: #ede7f6;
+  color: #4527a0;
+}
+.status-delivered {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+.status-cancelled {
+  background: #fce4ec;
+  color: #880e4f;
+}

@@ -1,0 +1,100 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Commandes</h1>
+      <p class="subtitle">{{ filteredCount() }} commande(s) affichée(s) sur {{ totalCount() }}</p>
+    </div>
+  </header>
+
+  <div class="stats-row">
+    <span class="stat-pill">
+      <mat-icon>receipt_long</mat-icon>
+      {{ totalCount() }} commande(s)
+    </span>
+    <span class="stat-pill" [class.stat-pill--active]="filteredCount() !== totalCount()">
+      <mat-icon>filter_alt</mat-icon>
+      {{ filteredCount() }} affichée(s)
+    </span>
+    <span class="stat-pill stat-pill--warn">
+      <mat-icon>hourglass_top</mat-icon>
+      {{ pendingCount() }} en attente / traitement
+    </span>
+    <span class="stat-pill stat-pill--accent">
+      <mat-icon>euro</mat-icon>
+      CA affiché&nbsp;: {{ revenue() | currency: 'EUR' }}
+    </span>
+    <span class="stat-pill">
+      <mat-icon>bar_chart</mat-icon>
+      Panier moy.&nbsp;: {{ averageOrder() | currency: 'EUR' }}
+    </span>
+    @if (selectedOrders().length) {
+      <span class="stat-pill stat-pill--selection">
+        <mat-icon>check_box</mat-icon>
+        {{ selectedOrders().length }} sélectionnée(s) · {{ selectionRevenue() | currency: 'EUR' }}
+      </span>
+    }
+  </div>
+
+  <mat-card class="table-card" appearance="outlined">
+    <app-data-table
+      #ordersTable
+      [data]="orders()"
+      [columns]="columns"
+      [rowClass]="orderRowClass"
+      [rowDisabled]="orderRowDisabled"
+      searchPlaceholder="Rechercher un client, un email..."
+      noDataMessage="Aucune commande ne correspond à votre recherche."
+      selectionMode="multiple"
+      (selectionChange)="onSelectionChange($event)"
+    >
+      <ng-template dtCell="id" let-order>
+        <span class="order-id">#{{ order.id }}</span>
+      </ng-template>
+
+      <ng-template dtCell="customerName" let-order>
+        <div class="customer-cell">
+          <span class="customer-avatar">{{ order.customerName[0] }}</span>
+          <span>{{ order.customerName }}</span>
+        </div>
+      </ng-template>
+
+      <ng-template dtCell="date" let-order>
+        {{ order.date | date: 'dd/MM/yyyy' }}
+      </ng-template>
+
+      <ng-template dtCell="status" let-order>
+        <span [class]="statusClass(order.status)">{{ statusLabel(order.status) }}</span>
+      </ng-template>
+
+      <ng-template dtCell="total" let-order>
+        <span class="total-cell">{{ order.total | currency: 'EUR' }}</span>
+      </ng-template>
+
+      <ng-template dtCell="active" let-order>
+        <mat-slide-toggle [checked]="order.active" (click)="toggleActive(order, $event)" />
+      </ng-template>
+
+      <ng-template dtCell="actions" let-order>
+        <div class="actions-cell">
+          <button
+            mat-icon-button
+            [disabled]="!order.active"
+            (click)="editOrder(order, $event)"
+            title="Modifier"
+          >
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button
+            mat-icon-button
+            class="delete-btn"
+            [disabled]="!order.active"
+            (click)="deleteOrder(order, $event)"
+            title="Supprimer"
+          >
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </ng-template>
+    </app-data-table>
+  </mat-card>
+</div>

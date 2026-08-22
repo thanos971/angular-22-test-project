@@ -1,4 +1,4 @@
-export type DataTableFilterType = 'text' | 'number' | 'date' | 'select';
+export type DataTableFilterType = 'text' | 'number' | 'date' | 'select' ;
 
 export interface NumberRange {
   min?: number;

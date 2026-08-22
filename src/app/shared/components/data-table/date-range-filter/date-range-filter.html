@@ -1,0 +1,51 @@
+<button mat-stroked-button [matMenuTriggerFor]="menu" class="date-btn">
+  <mat-icon class="date-icon">date_range</mat-icon>
+  @if (activeLabel()) {
+    <span class="date-label">{{ activeLabel() }}</span>
+  } @else {
+    <span class="date-placeholder">Période</span>
+  }
+  @if (activeLabel()) {
+    <mat-icon class="clear-icon" (click)="clear($event)">close</mat-icon>
+  }
+</button>
+
+<mat-menu #menu="matMenu" class="date-range-panel">
+  <div class="menu-inner">
+    <div class="presets-section">
+      @for (preset of presets; track preset.label) {
+        <button mat-menu-item class="preset-item" (click)="applyPreset(preset)">
+          {{ preset.label }}
+        </button>
+      }
+    </div>
+
+    <mat-divider />
+
+    <div class="custom-section" (click)="$event.stopPropagation()">
+      <p class="custom-label">Personnalisé</p>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+        <mat-label>Du</mat-label>
+        <input
+          matInput
+          [matDatepicker]="fromPicker"
+          [ngModel]="customFrom()"
+          (ngModelChange)="customFrom.set($event); onCustomChange()"
+        />
+        <mat-datepicker-toggle matSuffix [for]="fromPicker" />
+        <mat-datepicker #fromPicker />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+        <mat-label>Au</mat-label>
+        <input
+          matInput
+          [matDatepicker]="toPicker"
+          [ngModel]="customTo()"
+          (ngModelChange)="customTo.set($event); onCustomChange()"
+        />
+        <mat-datepicker-toggle matSuffix [for]="toPicker" />
+        <mat-datepicker #toPicker />
+      </mat-form-field>
+    </div>
+  </div>
+</mat-menu>

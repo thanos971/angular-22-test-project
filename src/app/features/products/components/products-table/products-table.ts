@@ -110,4 +110,8 @@ export class ProductsTable {
     const index = this.categories().indexOf(category);
     return index === -1 ? 0 : index % 3;
   }
+
+  protected onSelectionChange(selectedProducts: Product[]): void {
+    console.log('Selected products:', selectedProducts);
+  }
 }

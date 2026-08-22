@@ -1,4 +1,4 @@
-import { NgTemplateOutlet } from '@angular/common';
+import { NgClass, NgTemplateOutlet } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -14,10 +14,10 @@ import {
   viewChild,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { moveItemInArray } from '@angular/cdk/drag-drop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -27,13 +27,15 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-
 import { DataTableCellDefDirective } from './data-table-cell-def.directive';
 import { DataTableColumn, DateRange, NumberRange } from './data-table-column.model';
+import { ColumnPicker } from './column-picker/column-picker';
+import { ColumnFilterCell } from './column-filter-cell/column-filter-cell';
 
 @Component({
   selector: 'app-data-table',
   imports: [
+    NgClass,
     NgTemplateOutlet,
     FormsModule,
     MatTableModule,
@@ -46,8 +48,9 @@ import { DataTableColumn, DateRange, NumberRange } from './data-table-column.mod
     MatMenuModule,
     MatCheckboxModule,
     MatSelectModule,
-    MatDatepickerModule,
     MatProgressSpinnerModule,
+    ColumnPicker,
+    ColumnFilterCell,
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './data-table.html',
@@ -65,14 +68,27 @@ export class DataTable<T> {
   readonly noDataMessage = input('Aucun résultat ne correspond à votre recherche.');
 
   readonly retry = output<void>();
+  readonly selectionChange = output<T[]>();
+
+  readonly selectionMode = input<'none' | 'single' | 'multiple'>('none');
+  readonly rowClass = input<(row: T) => string>(() => '');
+  readonly rowDisabled = input<(row: T) => boolean>(() => false);
 
   private readonly cellDefs = contentChildren(DataTableCellDefDirective);
 
   protected readonly searchTerm = signal('');
   protected readonly columnFilters = signal<Record<string, unknown>>({});
   protected readonly visibleColumns = linkedSignal<Set<string>>(
-    () => new Set(this.columns().filter((c) => c.visible !== false).map((c) => c.key))
+    () =>
+      new Set(
+        this.columns()
+          .filter((c) => c.visible !== false)
+          .map((c) => c.key),
+      ),
   );
+
+  protected readonly columnOrder = linkedSignal<string[]>(() => this.columns().map((c) => c.key));
+  protected readonly selection = signal(new Set<T>());
 
   protected readonly dataSource = new MatTableDataSource<T>([]);
 
@@ -80,25 +96,52 @@ export class DataTable<T> {
   private readonly paginator = viewChild(MatPaginator);
 
   private readonly columnsByKey = computed(
-    () => new Map(this.columns().map((c) => [c.key, c] as const))
+    () => new Map(this.columns().map((c) => [c.key, c] as const)),
   );
 
-  protected readonly displayedColumns = computed(() =>
-    this.columns()
-      .filter((c) => this.visibleColumns().has(c.key))
-      .map((c) => c.key)
-  );
+  protected readonly orderedColumns = computed(() => {
+    const byKey = this.columnsByKey();
+    return this.columnOrder()
+      .map((key) => byKey.get(key)!)
+      .filter(Boolean);
+  });
+
+  protected readonly displayedColumns = computed(() => {
+    const cols = this.columnOrder().filter((key) => this.visibleColumns().has(key));
+    return this.selectionMode() !== 'none' ? ['__select__', ...cols] : cols;
+  });
+
+  protected readonly isAllSelected = computed(() => {
+    const rows = this.filteredRows().filter((r) => !this.rowDisabled()(r));
+    const sel = this.selection();
+    return rows.length > 0 && rows.every((r) => sel.has(r));
+  });
+
+  protected readonly isSomeSelected = computed(() => {
+    const rows = this.filteredRows().filter((r) => !this.rowDisabled()(r));
+    const sel = this.selection();
+    return sel.size > 0 && rows.some((r) => sel.has(r)) && !rows.every((r) => sel.has(r));
+  });
+
+  protected readonly showFilters = signal(false);
 
   protected readonly hasTextSearch = computed(() =>
-    this.columns().some((c) => c.filterable && (c.filterType ?? 'text') === 'text')
+    this.columns().some((c) => c.filterable && (c.filterType ?? 'text') === 'text'),
   );
 
-  protected readonly controlFilterColumns = computed(() =>
-    this.columns().filter((c) => c.filterable && (c.filterType ?? 'text') !== 'text')
+  protected readonly hasFilterableColumns = computed(() =>
+    this.columns().some((c) => c.filterable),
   );
+
+  protected readonly filterDisplayedColumns = computed(() => {
+    const cols = this.columnOrder()
+      .filter((key) => this.visibleColumns().has(key))
+      .map((key) => key + '__f');
+    return this.selectionMode() !== 'none' ? ['__select____f', ...cols] : cols;
+  });
 
   protected readonly hasActiveFilters = computed(
-    () => this.searchTerm().trim().length > 0 || this.hasActiveColumnFilters()
+    () => this.searchTerm().trim().length > 0 || this.hasActiveColumnFilters(),
   );
 
   /** Filtered rows (pre-pagination). Public so consumers can derive aggregates from it. */
@@ -119,17 +162,11 @@ export class DataTable<T> {
       }
 
       for (const col of cols) {
-        if (!col.filterable || (col.filterType ?? 'text') === 'text') {
-          continue;
-        }
+        if (!col.filterable) continue;
         const filterValue = filters[col.key];
-        if (filterValue == null) {
-          continue;
-        }
+        if (filterValue == null || filterValue === '') continue;
         const predicate = col.filterPredicate ?? this.defaultPredicate.bind(this, col);
-        if (!predicate(row, filterValue)) {
-          return false;
-        }
+        if (!predicate(row, filterValue)) return false;
       }
       return true;
     });
@@ -164,10 +201,23 @@ export class DataTable<T> {
       untracked(() => this.paginator()?.firstPage());
     });
 
+    // Remove stale references from selection when data is replaced
+    effect(() => {
+      const validSet = new Set(this.data());
+      untracked(() => {
+        const current = this.selection();
+        const cleaned = new Set([...current].filter((r) => validSet.has(r)));
+        if (cleaned.size !== current.size) {
+          this.selection.set(cleaned);
+          this.selectionChange.emit([...cleaned]);
+        }
+      });
+    });
+
     this.dataSource.sortingDataAccessor = (row, sortHeaderId) => {
       const col = this.columnsByKey().get(sortHeaderId);
       const value = col ? this.rawValue(row, col) : (row as Record<string, unknown>)[sortHeaderId];
-      return typeof value === 'string' ? value.toLowerCase() : (value as string | number) ?? '';
+      return typeof value === 'string' ? value.toLowerCase() : ((value as string | number) ?? '');
     };
   }
 
@@ -196,6 +246,52 @@ export class DataTable<T> {
     return this.visibleColumns().has(key);
   }
 
+  protected setColumnFilter(key: string, value: unknown): void {
+    this.columnFilters.update((filters) => ({ ...filters, [key]: value }));
+  }
+
+  protected isSelected(row: T): boolean {
+    return this.selection().has(row);
+  }
+
+  protected clearFilters(): void {
+    this.searchTerm.set('');
+    this.columnFilters.set({});
+  }
+
+  protected toggleRow(row: T): void {
+    const mode = this.selectionMode();
+    if (mode === 'none') return;
+    if (this.rowDisabled()(row)) return;
+    const next = new Set(this.selection());
+    if (next.has(row)) {
+      next.delete(row);
+    } else {
+      if (mode === 'single') next.clear();
+      next.add(row);
+    }
+    this.selection.set(next);
+    this.selectionChange.emit([...next]);
+  }
+
+  protected toggleAll(): void {
+    const rows = this.filteredRows().filter((r) => !this.rowDisabled()(r));
+    const next = new Set(this.selection());
+    if (rows.every((r) => next.has(r))) {
+      rows.forEach((r) => next.delete(r));
+    } else {
+      rows.forEach((r) => next.add(r));
+    }
+    this.selection.set(next);
+    this.selectionChange.emit([...next]);
+  }
+
+  protected moveColumn(event: { previousIndex: number; currentIndex: number }): void {
+    const order = [...this.columnOrder()];
+    moveItemInArray(order, event.previousIndex, event.currentIndex);
+    this.columnOrder.set(order);
+  }
+
   protected toggleColumn(key: string): void {
     const next = new Set(this.visibleColumns());
     if (next.has(key)) {
@@ -209,59 +305,32 @@ export class DataTable<T> {
     this.visibleColumns.set(next);
   }
 
-  protected setColumnFilter(key: string, value: unknown): void {
-    this.columnFilters.update((filters) => ({ ...filters, [key]: value }));
-  }
-
-  protected selectFilterValue(key: string): string[] {
-    return (this.columnFilters()[key] as string[] | undefined) ?? [];
-  }
-
-  protected numberFilterValue(key: string): NumberRange {
-    return (this.columnFilters()[key] as NumberRange | undefined) ?? {};
-  }
-
-  protected setNumberFilter(key: string, part: keyof NumberRange, raw: string): void {
-    const current = this.numberFilterValue(key);
-    const parsed = raw === '' || raw == null ? undefined : Number(raw);
-    this.setColumnFilter(key, { ...current, [part]: parsed });
-  }
-
-  protected dateFilterValue(key: string): DateRange {
-    return (this.columnFilters()[key] as DateRange | undefined) ?? {};
-  }
-
-  protected setDateFilter(key: string, part: keyof DateRange, value: Date | null): void {
-    const current = this.dateFilterValue(key);
-    this.setColumnFilter(key, { ...current, [part]: value ?? undefined });
-  }
-
-  protected clearFilters(): void {
-    this.searchTerm.set('');
-    this.columnFilters.set({});
-  }
-
   protected onRetry(): void {
     this.retry.emit();
   }
 
-  private hasActiveColumnFilters(): boolean {
-    return Object.values(this.columnFilters()).some((value) => {
-      if (value == null) {
-        return false;
-      }
-      if (Array.isArray(value)) {
-        return value.length > 0;
-      }
-      if (typeof value === 'object') {
-        return Object.values(value as Record<string, unknown>).some((v) => v != null);
-      }
-      return true;
-    });
+  protected hasActiveColumnFilters(): boolean {
+    return Object.values(this.columnFilters()).some((value) => this.isFilterValueActive(value));
+  }
+
+  protected activeColumnFilterCount(): number {
+    return Object.values(this.columnFilters()).filter((value) => this.isFilterValueActive(value))
+      .length;
+  }
+
+  private isFilterValueActive(value: unknown): boolean {
+    if (value == null || value === '') return false;
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value === 'object') {
+      return Object.values(value as Record<string, unknown>).some((v) => v != null);
+    }
+    return true;
   }
 
   private defaultTextPredicate(col: DataTableColumn<T>, row: T, term: unknown): boolean {
-    const t = String(term ?? '').trim().toLowerCase();
+    const t = String(term ?? '')
+      .trim()
+      .toLowerCase();
     if (!t) {
       return true;
     }

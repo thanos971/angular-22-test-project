@@ -44,6 +44,8 @@
       searchPlaceholder="Rechercher un titre ou une description..."
       noDataMessage="Aucun produit ne correspond à votre recherche."
       (retry)="reload()"
+      selectionMode="multiple"
+      (selectionChange)="onSelectionChange($event)"
     >
       <ng-template dtCell="image" let-product>
         <img class="product-thumb" [src]="product.image" [alt]="product.title" />

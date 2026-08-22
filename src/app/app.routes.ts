@@ -4,12 +4,13 @@ import { ProductsTable } from './features/products/components/products-table/pro
 import { ProductDetail } from './features/products/pages/product-detail/product-detail';
 import { Collection } from './features/products/pages/collection/collection';
 import { Cart } from './features/carts/pages/cart/cart';
+import { OrdersDashboard } from './features/orders/pages/orders-dashboard/orders-dashboard';
 
 export const routes: Routes = [
   {
     path: '',
-   component: Home,
-   title: 'Accueil'
+    component: Home,
+    title: 'Accueil',
   },
   {
     path: 'products',
@@ -30,5 +31,10 @@ export const routes: Routes = [
     path: 'cart',
     component: Cart,
     title: 'Panier',
+  },
+  {
+    path: 'orders',
+    component: OrdersDashboard,
+    title: 'Commandes',
   },
 ];

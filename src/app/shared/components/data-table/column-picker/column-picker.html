@@ -1,0 +1,31 @@
+<button mat-stroked-button [matMenuTriggerFor]="menu">
+  <mat-icon>view_column</mat-icon>
+  Colonnes
+</button>
+
+<mat-menu #menu="matMenu">
+  <div class="flex flex-col gap-1 px-4 py-2" (click)="$event.stopPropagation()">
+    <div
+      class="text-[11px] font-medium uppercase tracking-wide text-(--mat-sys-on-surface-variant) mb-1"
+    >
+      Colonnes visibles
+    </div>
+    <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="flex flex-col gap-1">
+      @for (col of columns(); track col.key) {
+        <div class="flex items-center gap-1" cdkDrag>
+          <mat-icon
+            cdkDragHandle
+            class="cursor-grab shrink-0 text-[18px]! w-[18px]! h-[18px]! text-(--mat-sys-on-surface-variant)"
+            >drag_indicator</mat-icon
+          >
+          <mat-checkbox
+            [checked]="visibleKeys().has(col.key)"
+            (change)="visibilityToggle.emit(col.key)"
+          >
+            {{ col.label }}
+          </mat-checkbox>
+        </div>
+      }
+    </div>
+  </div>
+</mat-menu>

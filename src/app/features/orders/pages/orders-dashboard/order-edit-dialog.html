@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>Commande #{{ formData.id }}</h2>
+
+<mat-dialog-content>
+  <form class="edit-form" #form="ngForm" autocomplete="off">
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Client</mat-label>
+        <input matInput name="customerName" [(ngModel)]="formData.customerName" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" name="customerEmail" [(ngModel)]="formData.customerEmail" />
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="datePicker" name="date" [(ngModel)]="formData.date" />
+        <mat-datepicker-toggle matSuffix [for]="datePicker" />
+        <mat-datepicker #datePicker />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Statut</mat-label>
+        <mat-select name="status" [(ngModel)]="formData.status">
+          @for (s of statusOptions; track s.value) {
+            <mat-option [value]="s.value">{{ s.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Pays</mat-label>
+        <input matInput name="country" [(ngModel)]="formData.country" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Articles</mat-label>
+        <input matInput type="number" name="items" min="0" [(ngModel)]="formData.items" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Total (€)</mat-label>
+        <input
+          matInput
+          type="number"
+          name="total"
+          min="0"
+          step="0.01"
+          [(ngModel)]="formData.total"
+        />
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Annuler</button>
+  <button mat-flat-button [disabled]="form.invalid" (click)="save()">Enregistrer</button>
+</mat-dialog-actions>

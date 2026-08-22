@@ -1,0 +1,55 @@
+@switch (column().filterType ?? 'text') {
+  @case ('text') {
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+      <input
+        matInput
+        type="text"
+        [ngModel]="textValue()"
+        (ngModelChange)="valueChange.emit($event || null)"
+      />
+      @if (textValue()) {
+        <button matSuffix mat-icon-button (click)="valueChange.emit(null)">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  }
+  @case ('select') {
+    <mat-form-field appearance="outline" subscriptSizing="dynamic" class="w-full">
+      <mat-select
+        multiple
+        [value]="selectValue()"
+        (selectionChange)="valueChange.emit($event.value)"
+      >
+        @for (option of selectOptions(); track option) {
+          <mat-option [value]="option">{{ option }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+  @case ('number') {
+    <div class="flex gap-1">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 min-w-0">
+        <input
+          matInput
+          type="number"
+          placeholder="min"
+          [ngModel]="numberValue().min"
+          (ngModelChange)="setNumberPart('min', $event)"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="flex-1 min-w-0">
+        <input
+          matInput
+          type="number"
+          placeholder="max"
+          [ngModel]="numberValue().max"
+          (ngModelChange)="setNumberPart('max', $event)"
+        />
+      </mat-form-field>
+    </div>
+  }
+  @case ('date') {
+    <app-date-range-filter [value]="dateValue()" (valueChange)="valueChange.emit($event)" />
+  }
+}
