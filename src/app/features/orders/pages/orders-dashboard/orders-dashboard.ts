@@ -143,4 +143,15 @@ export class OrdersDashboard {
         }
       });
   }
+
+  protected addNewOrder(): void {
+    this.dialog
+      .open(OrderEditDialog, { data: null, width: '800px' })
+      .afterClosed()
+      .subscribe((newOrder: Order | null) => {
+        if (newOrder) {
+          this.orders.update((list) => [...list, newOrder]);
+        }
+      });
+    }
 }

@@ -5,7 +5,49 @@
 // custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
+
+:root {
+
+  @include mat.button-overrides((
+
+    // Customize the filled button
+    filled-container-color: rgb(120, 63, 224),
+    filled-disabled-container-color: rgb(120, 63, 224, 0.38),
+    filled-label-text-color: rgb(255, 255, 255),
+    filled-disabled-label-text-color: rgb(255, 255, 255, 0.38),
+    filled-container-shape: 8px,
+
+    // Customize the outlined button
+    outlined-outline-color: rgb(120, 63, 224),
+    outlined-disabled-outline-color: rgb(120, 63, 224, 0.38),
+    outlined-label-text-color: rgb(120, 63, 224),
+    outlined-disabled-label-text-color: rgb(120, 63, 224, 0.38),
+    outlined-container-shape: 8px,
+    
+  ));
+
+  @include mat.fab-overrides((
+    container-color: rgb(120, 63, 224),
+    container-shape: 50%,
+    container-elevation-shadow: -4px -4px 5px 0px rgba(0, 0, 0, 0.5),
+  ));
+
+  @include mat.table-overrides((
+    background-color: rgba(0, 0, 0, 0.473),
+    //heder text color
+    header-headline-color: rgb(255, 255, 255),
+    //row line color
+    row-item-outline-color: rgba(46, 46, 46, 0.493),
+    //row text color
+    row-item-label-text-color: rgb(255, 255, 255),
+  ));
+}
+
 html {
+  // Default the application to a light color theme. This can be changed to
+  // `dark` to enable the dark color theme, or to `light dark` to defer to the
+  // user's system settings.
+  color-scheme: dark;
   height: 100%;
   @include mat.theme(
     (
@@ -20,10 +62,6 @@ html {
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
-  color-scheme: dark;
 
   // Set a default background, font and text colors for the application using
   // Angular Material's system-level CSS variables. Learn more about these

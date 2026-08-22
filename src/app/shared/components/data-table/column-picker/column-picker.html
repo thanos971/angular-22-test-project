@@ -1,6 +1,7 @@
 <button mat-stroked-button [matMenuTriggerFor]="menu">
   <mat-icon>view_column</mat-icon>
   Colonnes
+  {{ visibleKeys().size }}/{{ columns().length }}
 </button>
 
 <mat-menu #menu="matMenu">
