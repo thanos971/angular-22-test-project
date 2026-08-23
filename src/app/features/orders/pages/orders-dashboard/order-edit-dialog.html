@@ -39,11 +39,6 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Articles</mat-label>
-        <input matInput type="number" name="items" min="0" [(ngModel)]="formData.items" />
-      </mat-form-field>
-
-      <mat-form-field appearance="outline">
         <mat-label>Total (€)</mat-label>
         <input
           matInput
@@ -54,6 +49,20 @@
           [(ngModel)]="formData.total"
         />
       </mat-form-field>
+    </div>
+
+    <div class="items-section">
+      <p class="items-title">Articles commandés</p>
+      <ul class="items-list">
+        @for (item of formData.items; track item.productId) {
+          <li class="item-row">
+            <span class="item-name">{{ item.productName }}</span>
+            <span class="item-detail"
+              >{{ item.unitPrice | currency: 'EUR' }} × {{ item.quantity }}</span
+            >
+          </li>
+        }
+      </ul>
     </div>
   </form>
 </mat-dialog-content>

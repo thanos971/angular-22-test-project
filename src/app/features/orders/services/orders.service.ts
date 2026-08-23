@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
 
-import { Order } from '../models/order.model';
+import { Order, OrderItem } from '../models/order.model';
 
 const d = (s: string) => new Date(s);
+const p = (productId: number, productName: string, unitPrice: number, quantity = 1): OrderItem => ({
+  productId,
+  productName,
+  unitPrice,
+  quantity,
+});
 
 const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
   {
@@ -12,8 +18,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-20'),
     status: 'pending',
     total: 129.9,
-    items: 2,
     country: 'France',
+    items: [p(3, 'Jean slim', 59.9), p(5, 'Pull col roulé', 69.9)],
   },
   {
     id: 10002,
@@ -22,8 +28,13 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-19'),
     status: 'processing',
     total: 349.0,
-    items: 4,
     country: 'France',
+    items: [
+      p(6, 'Veste sport', 99.9, 2),
+      p(3, 'Jean slim', 59.9),
+      p(5, 'Pull col roulé', 69.9),
+      p(1, 'T-shirt basique', 19.9),
+    ],
   },
   {
     id: 10003,
@@ -32,8 +43,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-18'),
     status: 'shipped',
     total: 89.5,
-    items: 1,
     country: 'UK',
+    items: [p(8, 'Baskets running', 89.9)],
   },
   {
     id: 10004,
@@ -42,8 +53,14 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-17'),
     status: 'delivered',
     total: 514.99,
-    items: 6,
     country: 'Allemagne',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(6, 'Veste sport', 99.9),
+      p(3, 'Jean slim', 59.9),
+      p(2, 'Chemise classique', 34.9, 2),
+      p(10, 'Ceinture cuir', 24.9),
+    ],
   },
   {
     id: 10005,
@@ -52,9 +69,9 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-16'),
     status: 'cancelled',
     total: 74.99,
-    items: 1,
     country: 'Espagne',
     active: false,
+    items: [p(4, 'Robe casual', 44.9), p(10, 'Ceinture cuir', 24.9)],
   },
   {
     id: 10006,
@@ -63,8 +80,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-15'),
     status: 'delivered',
     total: 212.4,
-    items: 3,
     country: 'Belgique',
+    items: [p(6, 'Veste sport', 99.9), p(3, 'Jean slim', 59.9), p(12, 'Lunettes de soleil', 49.9)],
   },
   {
     id: 10007,
@@ -73,8 +90,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-14'),
     status: 'delivered',
     total: 67.0,
-    items: 2,
     country: 'France',
+    items: [p(3, 'Jean slim', 59.9), p(1, 'T-shirt basique', 19.9)],
   },
   {
     id: 10008,
@@ -83,8 +100,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-13'),
     status: 'shipped',
     total: 189.95,
-    items: 3,
     country: 'Allemagne',
+    items: [p(5, 'Pull col roulé', 69.9, 2), p(12, 'Lunettes de soleil', 49.9)],
   },
   {
     id: 10009,
@@ -93,8 +110,14 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-12'),
     status: 'processing',
     total: 430.0,
-    items: 5,
     country: 'Espagne',
+    items: [
+      p(7, 'Manteau laine', 179.9),
+      p(6, 'Veste sport', 99.9),
+      p(8, 'Baskets running', 89.9),
+      p(13, 'Écharpe en soie', 39.9),
+      p(1, 'T-shirt basique', 19.9),
+    ],
   },
   {
     id: 10010,
@@ -103,8 +126,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-11'),
     status: 'pending',
     total: 95.0,
-    items: 2,
     country: 'Italie',
+    items: [p(5, 'Pull col roulé', 69.9), p(10, 'Ceinture cuir', 24.9)],
   },
   {
     id: 10011,
@@ -113,8 +136,12 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-10'),
     status: 'delivered',
     total: 310.5,
-    items: 4,
     country: 'UK',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(12, 'Lunettes de soleil', 49.9),
+      p(1, 'T-shirt basique', 19.9),
+    ],
   },
   {
     id: 10012,
@@ -123,8 +150,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-09'),
     status: 'shipped',
     total: 145.0,
-    items: 2,
     country: 'Pologne',
+    items: [p(14, 'Montre classique', 129.9), p(10, 'Ceinture cuir', 24.9)],
   },
   {
     id: 10013,
@@ -133,8 +160,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-08'),
     status: 'delivered',
     total: 278.0,
-    items: 3,
     country: 'Suède',
+    items: [p(7, 'Manteau laine', 179.9), p(6, 'Veste sport', 99.9)],
   },
   {
     id: 10014,
@@ -143,9 +170,9 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-07'),
     status: 'cancelled',
     total: 55.99,
-    items: 1,
     country: 'Italie',
     active: false,
+    items: [p(3, 'Jean slim', 59.9)],
   },
   {
     id: 10015,
@@ -154,8 +181,12 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-06'),
     status: 'delivered',
     total: 399.0,
-    items: 5,
     country: 'Pologne',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(6, 'Veste sport', 99.9),
+      p(12, 'Lunettes de soleil', 49.9),
+    ],
   },
   {
     id: 10016,
@@ -164,8 +195,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-05'),
     status: 'processing',
     total: 162.75,
-    items: 2,
     country: 'Suède',
+    items: [p(5, 'Pull col roulé', 69.9, 2), p(10, 'Ceinture cuir', 24.9)],
   },
   {
     id: 10017,
@@ -174,8 +205,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-07-30'),
     status: 'delivered',
     total: 89.0,
-    items: 1,
     country: 'France',
+    items: [p(8, 'Baskets running', 89.9)],
   },
   {
     id: 10018,
@@ -184,8 +215,16 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-07-25'),
     status: 'delivered',
     total: 675.0,
-    items: 7,
     country: 'Allemagne',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(7, 'Manteau laine', 179.9),
+      p(6, 'Veste sport', 99.9),
+      p(11, 'Sac à main', 79.9),
+      p(8, 'Baskets running', 89.9),
+      p(12, 'Lunettes de soleil', 49.9),
+      p(1, 'T-shirt basique', 19.9),
+    ],
   },
   {
     id: 10019,
@@ -194,9 +233,9 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-07-20'),
     status: 'cancelled',
     total: 120.0,
-    items: 2,
     country: 'Belgique',
     active: false,
+    items: [p(5, 'Pull col roulé', 69.9), p(12, 'Lunettes de soleil', 49.9)],
   },
   {
     id: 10020,
@@ -205,8 +244,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-07-15'),
     status: 'delivered',
     total: 230.5,
-    items: 3,
     country: 'UK',
+    items: [p(7, 'Manteau laine', 179.9), p(12, 'Lunettes de soleil', 49.9)],
   },
   {
     id: 10021,
@@ -215,8 +254,15 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-07-10'),
     status: 'delivered',
     total: 484.0,
-    items: 6,
     country: 'France',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(6, 'Veste sport', 99.9),
+      p(5, 'Pull col roulé', 69.9),
+      p(3, 'Jean slim', 59.9),
+      p(10, 'Ceinture cuir', 24.9),
+      p(1, 'T-shirt basique', 19.9),
+    ],
   },
   {
     id: 10022,
@@ -225,8 +271,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-07-05'),
     status: 'shipped',
     total: 310.0,
-    items: 4,
     country: 'Portugal',
+    items: [p(9, 'Costume formel', 249.9), p(3, 'Jean slim', 59.9), p(1, 'T-shirt basique', 19.9)],
   },
   {
     id: 10023,
@@ -235,8 +281,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-06-28'),
     status: 'delivered',
     total: 55.0,
-    items: 1,
     country: 'France',
+    items: [p(2, 'Chemise classique', 34.9), p(1, 'T-shirt basique', 19.9)],
   },
   {
     id: 10024,
@@ -245,8 +291,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-06-20'),
     status: 'delivered',
     total: 198.0,
-    items: 3,
     country: 'Italie',
+    items: [p(7, 'Manteau laine', 179.9), p(1, 'T-shirt basique', 19.9)],
   },
   {
     id: 10025,
@@ -255,8 +301,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-06-15'),
     status: 'delivered',
     total: 340.0,
-    items: 4,
     country: 'France',
+    items: [p(7, 'Manteau laine', 179.9), p(6, 'Veste sport', 99.9), p(3, 'Jean slim', 59.9)],
   },
   {
     id: 10026,
@@ -265,8 +311,9 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-06-10'),
     status: 'cancelled',
     total: 85.5,
-    items: 1,
     country: 'Espagne',
+    active: false,
+    items: [p(15, 'Parfum', 89.9)],
   },
   {
     id: 10027,
@@ -275,8 +322,12 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-06-05'),
     status: 'delivered',
     total: 520.0,
-    items: 5,
     country: 'France',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(7, 'Manteau laine', 179.9),
+      p(8, 'Baskets running', 89.9),
+    ],
   },
   {
     id: 10028,
@@ -285,8 +336,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-05-28'),
     status: 'delivered',
     total: 175.99,
-    items: 2,
     country: 'Tchéquie',
+    items: [p(14, 'Montre classique', 129.9), p(12, 'Lunettes de soleil', 49.9)],
   },
   {
     id: 10029,
@@ -295,8 +346,13 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-05-20'),
     status: 'delivered',
     total: 620.0,
-    items: 8,
     country: 'UK',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(7, 'Manteau laine', 179.9),
+      p(6, 'Veste sport', 99.9),
+      p(8, 'Baskets running', 89.9),
+    ],
   },
   {
     id: 10030,
@@ -305,8 +361,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-05-15'),
     status: 'delivered',
     total: 99.9,
-    items: 2,
     country: 'France',
+    items: [p(6, 'Veste sport', 99.9)],
   },
   {
     id: 10031,
@@ -315,8 +371,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-05-10'),
     status: 'delivered',
     total: 289.0,
-    items: 3,
     country: 'Allemagne',
+    items: [p(9, 'Costume formel', 249.9), p(13, 'Écharpe en soie', 39.9)],
   },
   {
     id: 10032,
@@ -325,8 +381,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-04-30'),
     status: 'delivered',
     total: 157.0,
-    items: 2,
     country: 'Espagne',
+    items: [p(14, 'Montre classique', 129.9), p(10, 'Ceinture cuir', 24.9)],
   },
   {
     id: 10033,
@@ -335,8 +391,15 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-04-20'),
     status: 'delivered',
     total: 895.0,
-    items: 9,
     country: 'France',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(7, 'Manteau laine', 179.9),
+      p(6, 'Veste sport', 99.9, 2),
+      p(11, 'Sac à main', 79.9, 2),
+      p(5, 'Pull col roulé', 69.9, 2),
+      p(12, 'Lunettes de soleil', 49.9, 2),
+    ],
   },
   {
     id: 10034,
@@ -345,8 +408,13 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-04-10'),
     status: 'delivered',
     total: 412.0,
-    items: 5,
     country: 'UK',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(6, 'Veste sport', 99.9),
+      p(3, 'Jean slim', 59.9),
+      p(1, 'T-shirt basique', 19.9),
+    ],
   },
   {
     id: 10035,
@@ -355,8 +423,16 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-03-25'),
     status: 'delivered',
     total: 730.0,
-    items: 7,
     country: 'Allemagne',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(7, 'Manteau laine', 179.9),
+      p(6, 'Veste sport', 99.9),
+      p(8, 'Baskets running', 89.9),
+      p(11, 'Sac à main', 79.9),
+      p(5, 'Pull col roulé', 69.9),
+      p(3, 'Jean slim', 59.9),
+    ],
   },
   {
     id: 10036,
@@ -365,8 +441,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-03-15'),
     status: 'delivered',
     total: 66.0,
-    items: 1,
     country: 'France',
+    items: [p(2, 'Chemise classique', 34.9), p(10, 'Ceinture cuir', 24.9)],
   },
   {
     id: 10037,
@@ -375,8 +451,12 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-02-28'),
     status: 'delivered',
     total: 223.5,
-    items: 3,
     country: 'Pologne',
+    items: [
+      p(6, 'Veste sport', 99.9),
+      p(8, 'Baskets running', 89.9),
+      p(2, 'Chemise classique', 34.9),
+    ],
   },
   {
     id: 10038,
@@ -385,8 +465,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-02-14'),
     status: 'delivered',
     total: 349.0,
-    items: 4,
     country: 'France',
+    items: [p(9, 'Costume formel', 249.9), p(6, 'Veste sport', 99.9)],
   },
   {
     id: 10039,
@@ -395,8 +475,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-01-30'),
     status: 'delivered',
     total: 118.0,
-    items: 2,
     country: 'Italie',
+    items: [p(15, 'Parfum', 89.9), p(10, 'Ceinture cuir', 24.9)],
   },
   {
     id: 10040,
@@ -405,8 +485,13 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-01-15'),
     status: 'delivered',
     total: 590.0,
-    items: 6,
     country: 'France',
+    items: [
+      p(9, 'Costume formel', 249.9),
+      p(7, 'Manteau laine', 179.9),
+      p(8, 'Baskets running', 89.9),
+      p(5, 'Pull col roulé', 69.9),
+    ],
   },
   {
     id: 10041,
@@ -415,8 +500,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-21'),
     status: 'pending',
     total: 215.0,
-    items: 3,
     country: 'France',
+    items: [p(7, 'Manteau laine', 179.9), p(13, 'Écharpe en soie', 39.9)],
   },
   {
     id: 10042,
@@ -425,8 +510,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-21'),
     status: 'processing',
     total: 487.5,
-    items: 5,
     country: 'Portugal',
+    items: [p(9, 'Costume formel', 249.9), p(7, 'Manteau laine', 179.9), p(3, 'Jean slim', 59.9)],
   },
   {
     id: 10043,
@@ -435,8 +520,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-20'),
     status: 'pending',
     total: 73.0,
-    items: 1,
     country: 'Allemagne',
+    items: [p(4, 'Robe casual', 44.9), p(10, 'Ceinture cuir', 24.9)],
   },
   {
     id: 10044,
@@ -445,8 +530,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-19'),
     status: 'shipped',
     total: 299.0,
-    items: 3,
     country: 'Italie',
+    items: [p(9, 'Costume formel', 249.9), p(12, 'Lunettes de soleil', 49.9)],
   },
   {
     id: 10045,
@@ -455,8 +540,8 @@ const ORDERS: (Omit<Order, 'active'> & { active?: boolean })[] = [
     date: d('2026-08-18'),
     status: 'processing',
     total: 160.0,
-    items: 2,
     country: 'France',
+    items: [p(6, 'Veste sport', 99.9), p(3, 'Jean slim', 59.9)],
   },
 ];
 

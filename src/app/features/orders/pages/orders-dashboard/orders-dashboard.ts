@@ -20,6 +20,7 @@ import { Order, OrderStatus } from '../../models/order.model';
 import { OrdersService } from '../../services/orders.service';
 import { OrderEditDialog } from './order-edit-dialog';
 import { OrderDeleteDialog } from './order-delete-dialog';
+import { MatBadgeModule } from '@angular/material/badge';
 
 const STATUS_LABELS: Record<OrderStatus, string> = {
   pending: 'En attente',
@@ -45,7 +46,23 @@ const COLUMNS: DataTableColumn<Order>[] = [
       !!(v as string[])?.length && (v as string[]).includes(STATUS_LABELS[o.status]),
   },
   { key: 'country', label: 'Pays', sortable: true, filterable: true, filterType: 'select' },
-  { key: 'items', label: 'Articles', sortable: true },
+  {
+    key: 'items',
+    label: 'Articles',
+    sortable: true,
+    getValue: (o) => o.items.reduce((s, i) => s + i.quantity, 0),
+    filterable: true,
+    filterType: 'text',
+    filterPredicate: (o, term) => {
+      const t = String(term ?? '')
+        .trim()
+        .toLowerCase();
+      if (!t) return true;
+      return o.items.some(
+        (i) => i.productName.toLowerCase().includes(t) || String(i.quantity).includes(t),
+      );
+    },
+  },
   { key: 'total', label: 'Total', sortable: true, filterable: true, filterType: 'number' },
   { key: 'active', label: 'Actif', sortable: true },
   { key: 'actions', label: '' },
@@ -57,6 +74,7 @@ const COLUMNS: DataTableColumn<Order>[] = [
     CurrencyPipe,
     DatePipe,
     MatButtonModule,
+    MatBadgeModule,
     MatIconModule,
     MatSlideToggleModule,
     MatCardModule,
@@ -123,7 +141,7 @@ export class OrdersDashboard {
   protected editOrder(order: Order, event: MouseEvent): void {
     event.stopPropagation();
     this.dialog
-      .open(OrderEditDialog, { data: order, width: '640px' })
+      .open(OrderEditDialog, { data: order, minWidth: '800px' })
       .afterClosed()
       .subscribe((updated: Order | null) => {
         if (updated) {
@@ -153,5 +171,5 @@ export class OrdersDashboard {
           this.orders.update((list) => [...list, newOrder]);
         }
       });
-    }
+  }
 }

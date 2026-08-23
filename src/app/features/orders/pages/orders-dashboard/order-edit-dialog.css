@@ -16,3 +16,39 @@
   flex: 1;
   min-width: 160px;
 }
+
+.items-section {
+  margin-top: 8px;
+  padding: 12px;
+  background: var(--mat-sys-surface-container);
+  border-radius: 8px;
+}
+
+.items-title {
+  margin: 0 0 8px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.items-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.item-detail {
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
+}

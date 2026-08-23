@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { CurrencyPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,6 +22,7 @@ const STATUS_OPTIONS: { value: OrderStatus; label: string }[] = [
 @Component({
   selector: 'app-order-edit-dialog',
   imports: [
+    CurrencyPipe,
     FormsModule,
     MatButtonModule,
     MatDatepickerModule,
